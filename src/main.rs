@@ -12,6 +12,18 @@ fn main() {
                 .arg(
                     Arg::with_name("pubkey")
                         .help("The account pubkey to search.")
+                        .value_name("PUBKEY")
+                        .index(1)
+                        .required(true)
+                )
+        )
+        .subcommand(
+            SubCommand::with_name("tx")
+                .about("Search UTXO w/ provided txid.")
+                .arg(
+                    Arg::with_name("id")
+                        .help("The transaction id for UTXO information.")
+                        .value_name("TXID")
                         .index(1)
                         .required(true)
                 )
@@ -22,8 +34,17 @@ fn main() {
         println!("Searching UTXO set of pubkey...");
     }
 
+    if matches.is_present("tx") {
+        println!("Searching UTXO info...")
+    }
+
+
     if let Some(matches) = matches.subcommand_matches("account") {
-        println!("UTXO set of: {}", matches.value_of("pubkey").unwrap());
+        println!("UTXO set of PUBKEY: {}", matches.value_of("pubkey").unwrap());
+    }
+
+    if let Some(matches) = matches.subcommand_matches("tx") {
+        println!("UTXO set of TXID: {}", matches.value_of("id").unwrap());
     }
     
 }
