@@ -9,12 +9,12 @@ async fn main() {
         .author("Ben Schroth <ben@styng.social>")
         .about("A Bitcoin CLI tool that can search transactions by address or txid.")
         .subcommand(
-            SubCommand::with_name("account")
-                .about("Searches UTXO set w/ provided Account.")
+            SubCommand::with_name("address")
+                .about("Searches UTXO set w/ provided address.")
                 .arg(
                     Arg::with_name("pubkey")
-                        .help("The account pubkey to search.")
-                        .value_name("PUBKEY")
+                        .help("The address to search.")
+                        .value_name("ADDRESS")
                         .index(1)
                         .required(true)
                 )
@@ -32,8 +32,8 @@ async fn main() {
         )
         .get_matches();
 
-    if matches.is_present("account") {
-        println!("Searching UTXO set of pubkey...");
+    if matches.is_present("address") {
+        println!("Searching UTXO set of address...");
     }
 
     if matches.is_present("tx") {
@@ -41,8 +41,8 @@ async fn main() {
     }
 
 
-    if let Some(matches) = matches.subcommand_matches("account") {
-        println!("UTXO set of PUBKEY: {}", matches.value_of("pubkey").unwrap());
+    if let Some(matches) = matches.subcommand_matches("address") {
+        println!("UTXO set of ADDRESS: {}", matches.value_of("pubkey").unwrap());
     }
 
     if let Some(matches) = matches.subcommand_matches("tx") {
