@@ -1,7 +1,12 @@
 // use reqwest;
 use serde_derive::{Serialize, Deserialize};
 use reqwest::{Error, Url};
+use std::fmt;
+use colored::*;
 
+/**
+ * * Transaction Structs
+ */
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Transaction {
     txid: String,
@@ -55,5 +60,50 @@ impl Transaction {
             .await?;
         
         Ok(resp)
+    }
+}
+
+impl fmt::Display for Transaction {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.txid.green())
+    }
+}
+
+/**
+ * * Address Structs
+ */
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Address {
+    address: String,
+    chain_stats: Stats,
+    mempool_stats: Stats    
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct Stats {
+    funded_txo_count: u32,
+    funded_txo_sum: u64,
+    spent_txo_count: u32,
+    spent_txo_sum: u64,
+    tx_count: u32
+}
+
+impl Address {
+    pub async fn get(address: String) -> Result<Self, Error> {
+        let url: String = format!("https://mempool.space/api/address/{}", address);
+        let url: Url = Url::parse(&url).unwrap();
+
+        let resp = reqwest::get(url)
+            .await?
+            .json::<Address>()
+            .await?;
+
+        Ok(resp)
+    }
+}
+
+impl fmt::Display for Address {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.address.red())
     }
 }
