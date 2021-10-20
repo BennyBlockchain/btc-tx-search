@@ -1,14 +1,16 @@
-extern crate clap;
 use clap::{App, Arg, SubCommand};
+mod mempool;
+use mempool::Transaction;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let matches = App::new("btc-tx-search")
-        .version("0.0.1")
-        .author("Ben Schroth <ben@styng.social")
+        .version("v0.0.1")
+        .author("Ben Schroth <ben@styng.social>")
         .about("A Bitcoin CLI tool that can search transactions by address or txid.")
         .subcommand(
             SubCommand::with_name("account")
-                .about("Searches UTXO set of a provided Account.")
+                .about("Searches UTXO set w/ provided Account.")
                 .arg(
                     Arg::with_name("pubkey")
                         .help("The account pubkey to search.")
@@ -35,7 +37,7 @@ fn main() {
     }
 
     if matches.is_present("tx") {
-        println!("Searching UTXO info...")
+        println!("Searching UTXO info...");
     }
 
 
@@ -45,6 +47,10 @@ fn main() {
 
     if let Some(matches) = matches.subcommand_matches("tx") {
         println!("UTXO set of TXID: {}", matches.value_of("id").unwrap());
+        let id = matches.value_of("id").unwrap().to_string();
+        let tx_call = Transaction::get(id).await;
+
+        println!("Transaction:\n{:?}", tx_call);
     }
     
 }

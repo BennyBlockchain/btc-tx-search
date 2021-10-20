@@ -1,8 +1,9 @@
 // use reqwest;
 use serde_derive::{Serialize, Deserialize};
+use reqwest::{Error, Url};
 
-#[derive(Serialize, Deserialize)]
-struct Transaction {
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Transaction {
     txid: String,
     version: u8,
     locktime: u8,
@@ -13,29 +14,29 @@ struct Transaction {
     status: Status
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct Vin {
     txid: String,
     vout: u8,
     prevout: Prevout,
     scriptsig: String,
     scriptsig_asm: String,
-    witness: Vec<String>,
+    witness: Option<Vec<String>>,
     is_coinbase: bool,
     sequence: u32,
-    inner_redeemscript_asm: String
+    inner_redeemscript_asm: Option<String>
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct Prevout {
     scriptpubkey: String,
     scriptpubkey_asm: String,
     scriptpubkey_type: String,
     scriptpubkey_address: String,
-    value: u32
+    value: u64
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct Status {
     confirmed: bool,
     block_height: u32,
@@ -43,17 +44,16 @@ struct Status {
     block_time: u32
 }
 
-// pub async fn get_tx(id: String) -> Option<T, E> {
-//     let res = reqwest::get("https://mempool.space/api/tx/15e10745f15593a899cef391191bdd3d7c12412cc4696b7bcb669d0feadc8521")
-//         .await?
-//         .text()
-//         .await?;
-//     println!("This bitch, worked");
+impl Transaction {
+    pub async fn get(id: String) -> Result<Self, Error> {
+        let url: String = format!("https://mempool.space/api/tx/{}", id);
+        let url: Url = Url::parse(&url).unwrap();
 
-// }
-
-pub fn test() {
-    println!("This bitch, worked"); 
+        let resp = reqwest::get(url)
+            .await?
+            .json::<Transaction>()
+            .await?;
+        
+        Ok(resp)
+    }
 }
-
-
