@@ -107,3 +107,26 @@ impl fmt::Display for Address {
         write!(f, "{}", self.address.red())
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    
+    #[tokio::test]
+    async fn test_txids() {
+        let txid = String::from("a35a6e97be19c719fd7eb5d7367d248fc1398c7a3b3739be612b3693ed3d1af6");
+        let test_tx = Transaction::get(txid).await.unwrap();
+
+        assert_eq!(test_tx.txid, "a35a6e97be19c719fd7eb5d7367d248fc1398c7a3b3739be612b3693ed3d1af6");
+        assert_eq!(test_tx.vin[0].txid, "15dcd293b6c2ce093d3e0ccb735aa96d7f1852bade9f6cef1ca27912f64bc2cc");
+    }
+
+    #[tokio::test]
+    async fn test_address_balance() {
+        let address = String::from("1KFHE7w8BhaENAswwryaoccDb6qcT6DbYY");
+        let test_address = Address::get(address).await.unwrap();
+
+        assert_eq!(test_address.address, "1KFHE7w8BhaENAswwryaoccDb6qcT6DbYY");
+        assert_eq!(test_address.chain_stats.spent_txo_sum, 521251113989925);
+    }
+}
