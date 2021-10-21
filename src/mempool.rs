@@ -65,7 +65,14 @@ impl Transaction {
 
 impl fmt::Display for Transaction {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.txid.green())
+        println!("{} {}\n\n\t{}", 
+            "Bitcoin transaction:".bold(), self.txid.red(),
+            "Inputs:".bold());
+
+        for i in 0..self.vin.len() {
+            println!("\t  txid: \t{}\n\t  bitcoin: \t{}", self.vin[i].txid.green(), self.vin[i].prevout.value.to_string().green());
+        }
+        write!(f, "")
     }
 }
 
@@ -104,7 +111,13 @@ impl Address {
 
 impl fmt::Display for Address {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.address.red())
+        let address = "Address:".bold();
+        let balance = "Balance:".bold();
+        let tx_count = "Tx Count:".bold();
+        write!(f, "\n\t{} {}\n\t{} {}\n\t{} {}", 
+            address, self.address.red(), 
+            balance, self.mempool_stats.funded_txo_count.to_string().red(), 
+            tx_count, self.chain_stats.tx_count.to_string().red())
     }
 }
 

@@ -1,6 +1,5 @@
-use clap::{App, Arg, SubCommand};
-use colored::*;
 mod mempool;
+use clap::{App, Arg, SubCommand};
 use mempool::{Transaction, Address};
 
 #[tokio::main]
@@ -34,8 +33,6 @@ async fn main() {
         .get_matches();
 
     if let Some(matches) = matches.subcommand_matches("tx") {
-        println!("UTXO set of TXID: {}", matches.value_of("id").unwrap());
-        
         let id = matches.value_of("id").unwrap().to_string();
         let tx_call = Transaction::get(id).await.unwrap();
 
